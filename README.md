@@ -1,128 +1,279 @@
 #  RepoPilot AI
 
-**Intelligence-as-a-Service for GitHub Repositories**
+## Pay-per-analysis intelligence for GitHub repositories
 
-[![x402](https://img.shields.io/badge/x402-Payment%20Required-blue)](https://x402.org)
-[![Algorand](https://img.shields.io/badge/Algorand-Blockchain-green)](https://algorand.com)
-[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-purple)](https://openai.com)
-[![Brainwave](https://img.shields.io/badge/Brainwave-2026-orange)](https://brainwave.com)
+RepoPilot AI transforms GitHub repositories into actionable intelligence using AI-powered analysis modules that can be purchased individually through **x402 micropayments on the Algorand blockchain**.
 
+Instead of subscriptions, accounts, or expensive software licenses; users and even autonomous AI agents can pay for exactly the analysis they need, one request at a time.
 
 
 ##  The Problem
 
-Developers, VCs, and security teams spend **4+ hours per week** analyzing GitHub repositories:
--  Understanding architecture
--  Identifying security risks
--  Evaluating investment potential
--  Writing documentation
--  Creating pitch decks
+Understanding a GitHub repository can take hours.
+
+Developers, investors, security teams, and technical evaluators often need to:
+
+* Understand an unfamiliar codebase
+* Analyze software architecture
+* Identify potential security vulnerabilities
+* Review dependencies and license risks
+* Evaluate a startup's technical readiness
+* Understand the market surrounding a project
+* Rewrite outdated documentation
+* Prepare investor presentations and product demos
+
+This information is valuable, but traditional tools often require subscriptions, expensive plans, or manual research.
 
 
 ##  The Solution
 
-**RepoPilot AI** turns GitHub repositories into actionable intelligence with **8 AI-powered analyses**, each available via **x402 micropayments** on Algorand.
+**RepoPilot AI turns a GitHub repository into actionable intelligence on demand.**
 
-###  Features
+Users select the type of analysis they need, pay a small amount through an **x402-powered Algorand micropayment**, and receive an AI-generated result.
 
-| Feature | Price | Description |
-|---------|-------|-------------|
-|  Pitch Deck | 0.02 ALGO | Generate investor-ready pitch deck |
-|  Security Audit | 0.03 ALGO | Identify vulnerabilities + fixes |
-|  Architecture | 0.02 ALGO | Mermaid diagram + component breakdown |
-|  Investor Score | 0.01 ALGO | Startup readiness score (0-100) |
-|  README Rewrite | 0.01 ALGO | Professional README rewrite |
-|  Dependency Audit | 0.02 ALGO | License risks + vulnerability scan |
-|  Market Analysis | 0.04 ALGO | TAM, SAM, competitors, pricing |
-|  Demo Script | 0.01 ALGO | 5-minute investor demo script |
+### The core idea:
 
-**Total to fully analyze a repo: 0.16 ALGO (~$0.08)**
+> **One repository. Multiple intelligence modules. Pay only for the analysis you use.**
 
+
+##  Intelligence Modules
+
+| Module                    |     Price | Description                                                       |
+| ------------------------- | --------: | ----------------------------------------------------------------- |
+| 📊 Pitch Deck             | 0.02 ALGO | Generate an investor-ready pitch deck outline                     |
+| 🛡️ Security Audit        | 0.03 ALGO | Identify potential security risks and recommended fixes           |
+| 🏗️ Architecture Analysis | 0.02 ALGO | Generate architecture insights and Mermaid diagrams               |
+| 📈 Investor Score         | 0.01 ALGO | Evaluate startup and project readiness on a 0–100 scale           |
+| 📝 README Rewrite         | 0.01 ALGO | Transform existing documentation into professional README content |
+| 📦 Dependency Audit       | 0.02 ALGO | Analyze dependencies, licensing concerns, and potential risks     |
+| 🌍 Market Analysis        | 0.04 ALGO | Analyze market opportunities, competitors, and positioning        |
+| 🎤 Demo Script            | 0.01 ALGO | Generate a structured script for a five-minute product demo       |
+
+### Full Repository Intelligence
+
+**Total cost for all eight analyses: 0.16 ALGO (depending on the price of ALGO at the current moment)**
+
+Users only pay for the modules they need.
 
 
 ##  Why x402?
 
-- **Pay-per-call, not subscription** → You only pay for what you use
-- **AI agents can pay autonomously** → No accounts, no checkouts
-- **Micro-payments are viable** → Algorand's sub-cent fees
-- **Receipts for every transaction** → Transparent and auditable
+RepoPilot AI is designed around the idea that AI intelligence should be available as a **pay-per-request service**.
+
+### No subscription required
+
+Users do not need to commit to a monthly plan.
+
+### Pay only for what you use
+
+Each analysis is an independent paid request.
+
+### AI agents can pay autonomously
+
+The x402 model makes it possible for software agents to access paid intelligence APIs without traditional account-based checkout flows.
+
+### Micropayments become practical
+
+Algorand provides fast, low-cost blockchain transactions suitable for small-value API payments.
+
+### Transparent payment records
+
+Each paid analysis can be associated with an on-chain transaction, creating a transparent and auditable payment trail.
 
 
+##  How It Works
 
-##  The x402 Flow
+```text
+┌─────────────┐
+│   Client    │
+│ React + TS  │
+└──────┬──────┘
+       │
+       │ 1. Request analysis
+       ▼
+┌────────────────────┐
+│   RepoPilot API    │
+│   x402 Middleware  │
+└──────┬─────────────┘
+       │
+       │ 2. Payment Required
+       ▼
+┌────────────────────┐
+│  Algorand Wallet   │
+│  Sign Micropayment │
+└──────┬─────────────┘
+       │
+       │ 3. Payment
+       ▼
+┌────────────────────┐
+│     Algorand       │
+│ Payment Settlement │
+└──────┬─────────────┘
+       │
+       │ 4. Payment Verified
+       ▼
+┌────────────────────┐
+│   RepoPilot API    │
+│  Analysis Gateway  │
+└──────┬─────────────┘
+       │
+       ├──────────────▶ GitHub API
+       │                     │
+       │                     ▼
+       │              Repository Data
+       │
+       ▼
+┌────────────────────┐
+│      OpenAI        │
+│   AI Analysis      │
+└──────────┬─────────┘
+           │
+           ▼
+   Intelligence Result
+           │
+           ▼
+      React Client
+```
 
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Client    │────▶   x402       ────▶   Algorand   │
-│  (React)    │     │  Middleware │     │  (Payment)  │
-└─────────────┘     └─────────────┘     └─────────────┘
-                            │
-                            ▼
-                    ┌─────────────┐
-                    │  GitHub API │
-                    └─────────────┘
-                            │
-                            ▼
-                    ┌─────────────┐
-                    │  OpenAI     │
-                    │  GPT-4      │
-                    └─────────────┘
+### Request Flow
+
+1. The client requests a paid repository analysis.
+2. The API responds with an **HTTP 402 Payment Required** response.
+3. The client creates and signs the required Algorand payment.
+4. The payment is verified and settled through the x402 payment flow.
+5. RepoPilot retrieves the relevant repository information from GitHub.
+6. The AI model analyzes the repository data.
+7. The requested intelligence is returned to the client.
+8. The payment transaction provides a transparent on-chain receipt.
 
 
-### Step-by-Step:
+##  Example Use Cases
 
-1. **Client requests analysis** → HTTP request to API
-2. **Server responds with 402** → Payment requirements returned
-3. **Client pays via Algorand** → Transaction sent to merchant
-4. **Server verifies and settles** → Payment confirmed on-chain
-5. **Resource returned** → Analysis results with receipt
+###  Developers
+
+Quickly understand unfamiliar repositories and identify architecture or dependency issues.
+
+###  Security Teams
+
+Get an initial AI-assisted security analysis of a codebase.
+
+###  Investors and VCs
+
+Evaluate the technical maturity, market opportunity, and investment readiness of projects.
+
+###  Startup Founders
+
+Generate pitch materials, market analysis, documentation, and demo scripts from an existing repository.
+
+###  Autonomous AI Agents
+
+Access repository intelligence as a paid API without requiring a traditional subscription account.
 
 
+##  Architecture
 
-##  Tech Stack
+RepoPilot AI is built as a modular AI-powered API platform.
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | React + TypeScript |
-| Backend | Node.js + Express |
-| Blockchain | Algorand (x402 standard) |
-| AI | OpenAI API (GPT-4) |
-| Database | SQLite |
-| Deployment | Docker + Vercel/Railway |
+```text
+┌──────────────────────────────────────────┐
+│              React Frontend              │
+│          Repository Intelligence UI      │
+└─────────────────────┬────────────────────┘
+                      │
+                      ▼
+┌──────────────────────────────────────────┐
+│             Node.js + Express            │
+│              RepoPilot API               │
+└──────────┬───────────┬───────────┬───────┘
+           │           │           │
+           ▼           ▼           ▼
+      x402 Layer   GitHub API   SQLite
+           │
+           ▼
+      Algorand
+   Payment Network
+           │
+           ▼
+        OpenAI
+      AI Analysis
+```
 
+
+##  Technology Stack
+
+| Layer           | Technology                |
+| --------------- | ------------------------- |
+| Frontend        | React + TypeScript        |
+| Backend         | Node.js + Express         |
+| Payments        | x402                      |
+| Blockchain      | Algorand                  |
+| AI              | OpenAI API                |
+| Repository Data | GitHub API                |
+| Database        | SQLite                    |
+| Deployment      | Docker + Vercel / Railway |
+
+---
 
 ##  Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- Algorand wallet (Pera/MyAlgo)
-- OpenAI API key
-- GitHub personal access token
 
-### Installation
+Before running RepoPilot AI locally, make sure you have:
+
+* Node.js 18+
+* An Algorand-compatible wallet
+* An OpenAI API key
+* A GitHub Personal Access Token
+* An x402 facilitator configuration
+
+
+### 1. Clone the Repository
 
 ```bash
-# Clone the repository
 git clone https://github.com/yourusername/repopilot-ai.git
 cd repopilot-ai
+```
 
-# Backend setup
+---
+
+### 2. Install Backend Dependencies
+
+```bash
 cd backend
 npm install
-cp .env.example .env
-# Edit .env with your credentials
+```
 
-# Frontend setup
+Create your environment file:
+
+```bash
+cp .env.example .env
+```
+
+Configure the required environment variables.
+
+---
+
+### 3. Install Frontend Dependencies
+
+```bash
 cd ../frontend
 npm install
+```
 
-# Algorand Configuration
-ALGOD_SERVER=https://testnet-api.algorand.network
+---
+
+##  Environment Variables
+
+Example configuration:
+
+```env
+# Algorand
+ALGOD_SERVER=https://testnet-api.algonode.cloud
 ALGOD_PORT=443
 MERCHANT_ADDRESS=your_algorand_address
-MERCHANT_PRIVATE_KEY=your_private_key
 
-# x402 Facilitator
-X402_FACILITATOR_URL=https://x402.plausible.io
+# x402
+X402_FACILITATOR_URL=your_facilitator_url
 X402_API_KEY=your_x402_api_key
 
 # AI Provider
@@ -138,82 +289,147 @@ DATABASE_URL=./data/repopilot.db
 # Server
 PORT=3001
 NODE_ENV=development
+```
+
+> ⚠️ Never commit API keys, private keys, wallet secrets, or `.env` files to version control.
 
 
-# Terminal 1 - Backend
+##  Running the Application
+
+### Start the Backend
+
+```bash
 cd backend
 npm run dev
+```
 
-# Terminal 2 - Frontend
+### Start the Frontend
+
+In a separate terminal:
+
+```bash
 cd frontend
 npm start
+```
 
+The application will be available at:
 
-# Access the App
+```text
 Frontend: http://localhost:3000
+Backend:  http://localhost:3001
+```
 
-Backend: http://localhost:3001
+---
 
+##  API Examples
 
-# Get Repository Overview (Free for testing)
+### Free Repository Overview
+
+A basic repository overview can be requested for testing:
+
+```bash
 curl -X POST http://localhost:3001/api/repos/overview \
   -H "Content-Type: application/json" \
-  -d '{"repo": "https://github.com/facebook/react"}'
+  -d '{"repo":"https://github.com/facebook/react"}'
+```
 
 
+### Paid Analysis Request
 
-# x402 payment required
-  # Step 1: Request analysis
+Request a pitch deck analysis:
+
+```bash
 curl -X POST http://localhost:3001/api/pitch-deck \
   -H "Content-Type: application/json" \
-  -d '{"repo": "https://github.com/facebook/react"}'
+  -d '{"repo":"https://github.com/facebook/react"}'
+```
 
-# Step 2: 402 Payment Required response
-# Step 3: Pay via Algorand
-# Step 4: Retry with receipt
-curl -X POST http://localhost:3001/api/pitch-deck \
-  -H "Content-Type: application/json" \
-  -H "X-Payment-Receipt: {\"txid\":\"...\",\"reference\":\"...\"}" \
-  -d '{"repo": "https://github.com/facebook/react"}'
+If payment is required, the API returns an HTTP `402 Payment Required` response containing the required payment information.
+
+The client then completes the x402 payment flow and retries the request with the appropriate payment authorization.
 
 
-  # Available Endpoints
-Endpoint	| Price |	Description
-/pitch-deck |	0.02 | ALGO	Pitch deck generation
-/security-audit	| 0.03 | ALGO	Security vulnerability scan
-/architecture	| 0.02 | ALGO	Architecture diagram
-/investor-score	| 0.01|  ALGO	Investment readiness score
-/readme-rewrite	| 0.01 | ALGO	Professional README
-/dependency-audit	|0.02 | ALGO	Dependency scan
-/market-analysis | 0.04 | ALGO	Market analysis
-/demo-script	| 0.01 | ALGO	Demo script generation
+##  Available API Endpoints
+
+| Endpoint                |     Price | Description                                |
+| ----------------------- | --------: | ------------------------------------------ |
+| `/api/pitch-deck`       | 0.02 ALGO | Generate investor pitch intelligence       |
+| `/api/security-audit`   | 0.03 ALGO | Analyze potential security risks           |
+| `/api/architecture`     | 0.02 ALGO | Analyze architecture and generate diagrams |
+| `/api/investor-score`   | 0.01 ALGO | Generate an investment readiness score     |
+| `/api/readme-rewrite`   | 0.01 ALGO | Rewrite repository documentation           |
+| `/api/dependency-audit` | 0.02 ALGO | Analyze dependencies and license risks     |
+| `/api/market-analysis`  | 0.04 ALGO | Analyze market opportunity and competition |
+| `/api/demo-script`      | 0.01 ALGO | Generate a structured product demo script  |
 
 
-##m Screenshots
-Dashboard
-https://Dashboard.png
+##  Security Considerations
 
-Analysis Modal
-https://Analysis.png
+RepoPilot AI is designed with the following principles:
 
-Transaction History
-https://transaction-dashboard.png
-
-
--- Brainwave 2026
-Built for the x402 Blockchain Track at Brainwave 2026.
-
--- Team: Mustech
-
--- Contact: mustaphabashiru442@gmail.com
+* API keys are stored server-side.
+* Private credentials should never be exposed to the frontend.
+* Payment verification occurs before paid analysis is executed.
+* GitHub access is handled through server-side API requests.
+* Payment activity can be tracked through blockchain transactions.
+* Environment variables are used for sensitive configuration.
 
 
--- License
-MIT
+##  Future Roadmap
 
--- Acknowledgments
-GoPlausible - x402 Facilitator
+Potential future improvements include:
 
-Algorand Foundation - Blockchain Infrastructure
+* [ ] Support for additional AI providers
+* [ ] Multi-chain payment support
+* [ ] More repository intelligence modules
+* [ ] Automated pull request analysis
+* [ ] Continuous repository monitoring
+* [ ] AI agent-native API access
+* [ ] Team workspaces
+* [ ] Repository comparison
+* [ ] Historical analysis and trend tracking
+* [ ] Public intelligence marketplace
 
-OpenAI - GPT-4 API
+
+##  Screenshots
+
+### Dashboard
+
+(https://Dashboard.png)
+
+### Analysis Modal
+
+(https://Analysis.png)
+
+### Transaction History
+
+(https://transaction-dashboard.png)
+
+
+## Built for Brainwave 2026
+
+RepoPilot AI was built for the **x402 Blockchain Track at Brainwave 2026**.
+
+The project explores how blockchain-native micropayments can transform AI-powered APIs from subscription-based products into modular, pay-per-use intelligence services.
+
+
+##  Team
+
+**Mustech**
+
+Built by **Bashiru Mustapha**
+
+
+##  Acknowledgments
+
+* **GoPlausible** — x402 facilitator infrastructure
+* **Algorand Foundation** — Blockchain infrastructure
+* **OpenAI** — AI model infrastructure
+
+
+##  License
+
+This project is licensed under the MIT License.
+
+
+> **RepoPilot AI — Turn any GitHub repository into actionable intelligence, one paid analysis at a time.**

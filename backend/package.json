@@ -9,17 +9,21 @@
     "dev": "nodemon src/app.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "helmet": "^7.1.0",
+    "@x402-avm/avm": "^2.6.1",
+    "@x402-avm/core": "^2.6.1",
+    "@x402-avm/express": "^2.6.1",
+    "@x402-avm/extensions": "^2.6.1",
     "algosdk": "^2.7.0",
     "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
     "openai": "^4.20.0",
-    "uuid": "^9.0.1",
-    "sqlite3": "^5.1.6",
     "sqlite": "^5.1.1",
-    "express-rate-limit": "^7.1.5"
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

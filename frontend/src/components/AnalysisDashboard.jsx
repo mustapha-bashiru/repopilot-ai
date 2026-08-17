@@ -25,6 +25,13 @@ function AnalysisDashboard({ repo, analyses, onAnalyze, loading }) {
     return (
         <div className="dashboard">
             <h2> {repoName}</h2>
+            <div className="payment-network-note" role="note">
+                <strong>Payment on Algorand Testnet</strong>
+                <span>
+                    Analysis prices are paid in Testnet USDC (ASA 10458941).
+                    Keep a small Testnet ALGO balance for the network fee.
+                </span>
+            </div>
             <div className="grid">
                 {ANALYSES.map((analysis) => {
                     const result = analyses[`/${analysis.id}`];
@@ -37,7 +44,7 @@ function AnalysisDashboard({ repo, analyses, onAnalyze, loading }) {
                                 <h3>{analysis.label}</h3>
                             </div>
                             <div className="card-body">
-                                <p className="price">{analysis.price} ALGO</p>
+                                <p className="price">${analysis.price.toFixed(2)} USDC</p>
                                 {result ? (
                                     <div className="result">
                                         <button
@@ -53,7 +60,7 @@ function AnalysisDashboard({ repo, analyses, onAnalyze, loading }) {
                                         onClick={() => onAnalyze(repo, `/${analysis.id}`)}
                                         disabled={isLoading} 
                                     >
-                                        {isLoading ? '⏳ Processing...' : `Analyze (${analysis.price} ALGO)`}
+                                        {isLoading ? '⏳ Processing...' : `Analyze ($${analysis.price.toFixed(2)} USDC)`}
                                     </button>
                                 )}
                             </div>

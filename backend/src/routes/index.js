@@ -16,29 +16,14 @@ export const createRoutes = () => {
                     return res.status(400).json({ error: 'Repository URL required' });
                 }
 
-                const receipt = req.payment;
-                if (!receipt) {
-                    return res.status(402).json({ error: 'Payment required' });
-                }
-
                 logger.info(`Fetching repo data for ${repo}`);
                 const repoData = await githubService.fetchRepoData(repo);
 
                 logger.info(`Generating ${featureName}...`);
                 const result = await aiService[aiMethod](repoData);
 
-                await ReceiptModel.create({
-                    txid: receipt.receipt.txid,
-                    reference: receipt.receipt.reference,
-                    amount: receipt.amount,
-                    resource: req.path,
-                    repo: repo,
-                    status: 'completed'
-                });
-
                 res.json({
                     data: result,
-                    receipt: receipt.receipt,
                     feature: featureName,
                     repo: repoData.fullName || repo,
                     timestamp: new Date().toISOString()
@@ -109,6 +94,18 @@ export const createRoutes = () => {
             res.status(500).json({ error: error.message });
         }
     });
+
+    router.get('/history/:walletAddress', async (req, res) => {
+    try {
+        const history = await ReceiptModel.findAll({
+            where: { sender: req.params.walletAddress },
+            order: [['createdAt', 'DESC']]
+        });
+        res.json({ success: true, history });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch history' });
+    }
+});
 
     return router;
 };

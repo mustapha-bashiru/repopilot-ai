@@ -7,6 +7,7 @@ import { rateLimit } from 'express-rate-limit';
 import { x402Middleware } from './middleware/payment.js';
 import { createRoutes } from './routes/index.js';
 import { initDatabase } from './models/Receipt.js';
+import { config } from './utils/config.js';
 import { logger } from './utils/logger.js';
 
 dotenv.config();
@@ -15,7 +16,33 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(helmet());
-app.use(cors());
+
+// Expose x402 response headers so browser clients can parse 402 Payment Required metadata
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    exposedHeaders: [
+        'WWW-Authenticate',
+        'Server-Authorization',
+        'X-Payment-Required',
+        'x-payment-required',
+        'PAYMENT-REQUIRED',
+        'payment-required',
+        'PAYMENT-RESPONSE',
+        'payment-response'
+    ],
+    allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'PAYMENT-SIGNATURE',
+        'payment-signature',
+        'X-PAYMENT',
+        'x-payment',
+        'X-Payment-Response',
+        'Access-Control-Expose-Headers',
+        'access-control-expose-headers'
+    ]
+}));
+
 app.use(express.json());
 
 const limiter = rateLimit({
@@ -32,7 +59,8 @@ app.get('/health', (req, res) => {
 await initDatabase();
 
 const routes = createRoutes();
-app.use('/api', x402Middleware, routes);
+app.use(x402Middleware);
+app.use('/api', routes);
 
 app.use((err, req, res, next) => {
     logger.error('Unhandled error:', err);
@@ -41,6 +69,7 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
     logger.info(` RepoPilot AI backend running on port ${PORT}`);
-    logger.info(` x402 facilitator: ${process.env.X402_FACILITATOR_URL}`);
+    logger.info(` x402 facilitator: ${config.X402_FACILITATOR_URL}`);
+    logger.info(` Algorand network: Testnet (USDC ASA 10458941)`);
     logger.info(` http://localhost:${PORT}`);
 });

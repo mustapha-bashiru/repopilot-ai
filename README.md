@@ -1,435 +1,235 @@
-#  RepoPilot AI
+# RepoPilot AI
 
-## Pay-per-analysis intelligence for GitHub repositories
+Production-oriented, pay-per-request intelligence for GitHub repositories. RepoPilot combines a responsive React client, an Express analysis API, OpenAI-powered reports, and verifiable x402 payments on Algorand.
 
-RepoPilot AI transforms GitHub repositories into actionable intelligence using AI-powered analysis modules that can be purchased individually through **x402 micropayments on the Algorand blockchain**.
+## Stable x402 Pricing: ALGO to USDC
 
-Instead of subscriptions, accounts, or expensive software licenses; users and even autonomous AI agents can pay for exactly the analysis they need, one request at a time.
+> **RepoPilot no longer prices or settles analysis requests in native ALGO. All service payments settle in Testnet USDC, Algorand Standard Asset (ASA) `10458941`, through the x402 protocol.**
 
+**Why?**
+Native ALGO volatility made a fixed API price unpredictable between quote and settlement. Testnet USDC gives users and machine clients stable USD-denominated micro-pricing. Each feature is quoted from `$0.01` to `$0.04` USDC, independent of ALGO market movements.
 
-##  The Problem
+The payer needs a small Testnet ALGO balance to cover the Algorand network fee, typically about `0.001 ALGO`. The service charge itself is transferred and settled exclusively in USDC.
 
-Understanding a GitHub repository can take hours.
+| Payment concern | Asset |
+| --- | --- |
+| RepoPilot analysis settlement | Testnet USDC (ASA `10458941`) |
+| Algorand network transaction fee | A minimal Testnet ALGO balance |
+| Payment verification and settlement | GoPlausible x402 facilitator |
 
-Developers, investors, security teams, and technical evaluators often need to:
+## x402 Payment Flow
 
-* Understand an unfamiliar codebase
-* Analyze software architecture
-* Identify potential security vulnerabilities
-* Review dependencies and license risks
-* Evaluate a startup's technical readiness
-* Understand the market surrounding a project
-* Rewrite outdated documentation
-* Prepare investor presentations and product demos
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as React + Pera Wallet
+    participant API as RepoPilot Express API
+    participant X402 as GoPlausible Facilitator
+    participant AVM as Algorand Testnet
+    participant AI as GitHub + OpenAI
 
-This information is valuable, but traditional tools often require subscriptions, expensive plans, or manual research.
-
-
-##  The Solution
-
-**RepoPilot AI turns a GitHub repository into actionable intelligence on demand.**
-
-Users select the type of analysis they need, pay a small amount through an **x402-powered Algorand micropayment**, and receive an AI-generated result.
-
-### The core idea:
-
-> **One repository. Multiple intelligence modules. Pay only for the analysis you use.**
-
-
-##  Intelligence Modules
-
-| Module                    |     Price | Description                                                       |
-| ------------------------- | --------: | ----------------------------------------------------------------- |
-| 📊 Pitch Deck             | 0.02 ALGO | Generate an investor-ready pitch deck outline                     |
-| 🛡️ Security Audit        | 0.03 ALGO | Identify potential security risks and recommended fixes           |
-| 🏗️ Architecture Analysis | 0.02 ALGO | Generate architecture insights and Mermaid diagrams               |
-| 📈 Investor Score         | 0.01 ALGO | Evaluate startup and project readiness on a 0–100 scale           |
-| 📝 README Rewrite         | 0.01 ALGO | Transform existing documentation into professional README content |
-| 📦 Dependency Audit       | 0.02 ALGO | Analyze dependencies, licensing concerns, and potential risks     |
-| 🌍 Market Analysis        | 0.04 ALGO | Analyze market opportunities, competitors, and positioning        |
-| 🎤 Demo Script            | 0.01 ALGO | Generate a structured script for a five-minute product demo       |
-
-### Full Repository Intelligence
-
-**Total cost for all eight analyses: 0.16 ALGO (depending on the price of ALGO at the current moment)**
-
-Users only pay for the modules they need.
-
-
-##  Why x402?
-
-RepoPilot AI is designed around the idea that AI intelligence should be available as a **pay-per-request service**.
-
-### No subscription required
-
-Users do not need to commit to a monthly plan.
-
-### Pay only for what you use
-
-Each analysis is an independent paid request.
-
-### AI agents can pay autonomously
-
-The x402 model makes it possible for software agents to access paid intelligence APIs without traditional account-based checkout flows.
-
-### Micropayments become practical
-
-Algorand provides fast, low-cost blockchain transactions suitable for small-value API payments.
-
-### Transparent payment records
-
-Each paid analysis can be associated with an on-chain transaction, creating a transparent and auditable payment trail.
-
-
-##  How It Works
-
-```text
-┌─────────────┐
-│   Client    │
-│ React + TS  │
-└──────┬──────┘
-       │
-       │ 1. Request analysis
-       ▼
-┌────────────────────┐
-│   RepoPilot API    │
-│   x402 Middleware  │
-└──────┬─────────────┘
-       │
-       │ 2. Payment Required
-       ▼
-┌────────────────────┐
-│  Algorand Wallet   │
-│  Sign Micropayment │
-└──────┬─────────────┘
-       │
-       │ 3. Payment
-       ▼
-┌────────────────────┐
-│     Algorand       │
-│ Payment Settlement │
-└──────┬─────────────┘
-       │
-       │ 4. Payment Verified
-       ▼
-┌────────────────────┐
-│   RepoPilot API    │
-│  Analysis Gateway  │
-└──────┬─────────────┘
-       │
-       ├──────────────▶ GitHub API
-       │                     │
-       │                     ▼
-       │              Repository Data
-       │
-       ▼
-┌────────────────────┐
-│      OpenAI        │
-│   AI Analysis      │
-└──────────┬─────────┘
-           │
-           ▼
-   Intelligence Result
-           │
-           ▼
-      React Client
+    User->>UI: Select repository and analysis
+    UI->>API: POST paid endpoint
+    API-->>UI: HTTP 402 + USDC payment requirements
+    UI->>UI: Build ASA 10458941 transfer
+    User->>UI: Approve in Pera Wallet
+    UI->>API: Retry with x402 payment payload
+    API->>X402: Verify and settle exact payment
+    X402->>AVM: Confirm USDC transfer
+    AVM-->>X402: Transaction ID
+    X402-->>API: Settlement confirmation
+    API->>AI: Analyze repository
+    AI-->>API: Structured result
+    API-->>UI: Result + settlement receipt
+    UI-->>User: Analysis and Lora Explorer link
 ```
 
-### Request Flow
+The frontend uses `@x402-avm/fetch` to handle the HTTP `402 Payment Required` challenge and `@x402-avm/avm` to sign an exact Algorand asset transfer through Pera Wallet. The backend uses `@x402-avm/express`, `@x402-avm/core`, and `ExactAvmScheme` to advertise, verify, and settle protected routes. Confirmed transaction IDs are stored as receipts and link to [Algorand Lora Explorer](https://lora.algokit.io/testnet).
 
-1. The client requests a paid repository analysis.
-2. The API responds with an **HTTP 402 Payment Required** response.
-3. The client creates and signs the required Algorand payment.
-4. The payment is verified and settled through the x402 payment flow.
-5. RepoPilot retrieves the relevant repository information from GitHub.
-6. The AI model analyzes the repository data.
-7. The requested intelligence is returned to the client.
-8. The payment transaction provides a transparent on-chain receipt.
+## Analysis Modules
 
+| Endpoint | Feature | Price |
+| --- | --- | ---: |
+| `POST /api/pitch-deck` | Investor-ready pitch deck outline | `$0.02` USDC |
+| `POST /api/security-audit` | Security risks and recommended fixes | `$0.03` USDC |
+| `POST /api/architecture` | Architecture insights and diagrams | `$0.02` USDC |
+| `POST /api/investor-score` | Investment readiness score | `$0.01` USDC |
+| `POST /api/readme-rewrite` | Professional repository documentation | `$0.01` USDC |
+| `POST /api/dependency-audit` | Dependency, license, and risk review | `$0.02` USDC |
+| `POST /api/market-analysis` | Market and competitor analysis | `$0.04` USDC |
+| `POST /api/demo-script` | Structured product demo script | `$0.01` USDC |
 
-##  Example Use Cases
+The complete suite costs `$0.16` Testnet USDC. Users pay only for the requested module.
 
-###  Developers
-
-Quickly understand unfamiliar repositories and identify architecture or dependency issues.
-
-###  Security Teams
-
-Get an initial AI-assisted security analysis of a codebase.
-
-###  Investors and VCs
-
-Evaluate the technical maturity, market opportunity, and investment readiness of projects.
-
-###  Startup Founders
-
-Generate pitch materials, market analysis, documentation, and demo scripts from an existing repository.
-
-###  Autonomous AI Agents
-
-Access repository intelligence as a paid API without requiring a traditional subscription account.
-
-
-##  Architecture
-
-RepoPilot AI is built as a modular AI-powered API platform.
+## Product Architecture
 
 ```text
-┌──────────────────────────────────────────┐
-│              React Frontend              │
-│          Repository Intelligence UI      │
-└─────────────────────┬────────────────────┘
-                      │
-                      ▼
-┌──────────────────────────────────────────┐
-│             Node.js + Express            │
-│              RepoPilot API               │
-└──────────┬───────────┬───────────┬───────┘
-           │           │           │
-           ▼           ▼           ▼
-      x402 Layer   GitHub API   SQLite
-           │
-           ▼
-      Algorand
-   Payment Network
-           │
-           ▼
-        OpenAI
-      AI Analysis
+frontend/
+  React 19 UI
+  Pera Wallet connection and safety controls
+  x402-aware fetch client and receipt extraction
+  Responsive analyzer, history view, and result modal
+        |
+        | HTTP 402 challenge / paid retry
+        v
+backend/
+  Express 4 API and rate limiting
+  x402 route middleware and GoPlausible facilitator client
+  GitHub repository ingestion and OpenAI analysis services
+  SQLite settlement receipt history
+        |
+        v
+Algorand Testnet
+  USDC ASA 10458941 settlement + Lora transaction record
 ```
 
+### Wallet State and Safety
 
-##  Technology Stack
+`frontend/src/App.jsx` keeps connection state non-destructive. The wallet popover shows the full address and a network label driven by `REACT_APP_ALGORAND_NETWORK`. Disconnect is a separate command with an explicit confirmation step, and connection or disconnection failures surface in the UI.
 
-| Layer           | Technology                |
-| --------------- | ------------------------- |
-| Frontend        | React + TypeScript        |
-| Backend         | Node.js + Express         |
-| Payments        | x402                      |
-| Blockchain      | Algorand                  |
-| AI              | OpenAI API                |
-| Repository Data | GitHub API                |
-| Database        | SQLite                    |
-| Deployment      | Docker + Vercel / Railway |
+### Dynamic Results
 
----
+`frontend/src/components/ResultModal.jsx` normalizes unrealistic hour-based backend estimates into short minute tasks and calculates the total improvement time from individual plan items. Settlement receipts expose the transaction ID, active network, USDC asset, facilitator status, and a Lora Explorer link. The modal is viewport-bounded and vertically scrollable on small screens.
 
-##  Quick Start
+### Responsive Interface
+
+The frontend supports mobile, tablet, and desktop viewports. Below `768px`, header controls, analysis cards, statistics, inputs, and actions become full-width vertical layouts. Tablet layouts use two analysis columns, while desktop uses the available multi-column grid. Wide transaction data scrolls within its own accessible container instead of overflowing the page.
+
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React 19, Create React App, responsive CSS |
+| Wallet | Pera Wallet Connect |
+| x402 client | `@x402-avm/fetch`, `@x402-avm/avm`, `@x402-avm/core` |
+| API | Node.js, Express, Helmet, CORS, rate limiting |
+| x402 server | `@x402-avm/express`, `ExactAvmScheme`, GoPlausible facilitator |
+| Blockchain | Algorand Testnet, USDC ASA `10458941`, AlgoNode |
+| Intelligence | GitHub API, OpenAI API |
+| Persistence | SQLite settlement receipts |
+| Operations | Docker, Docker Compose, npm |
+
+## Local Setup
 
 ### Prerequisites
 
-Before running RepoPilot AI locally, make sure you have:
+- Node.js 18 or newer
+- npm
+- Pera Wallet with Testnet USDC ASA `10458941` opted in
+- A small Testnet ALGO balance for network fees
+- OpenAI API key and GitHub token
+- Merchant Testnet account opted into the same USDC asset
 
-* Node.js 18+
-* An Algorand-compatible wallet
-* An OpenAI API key
-* A GitHub Personal Access Token
-* An x402 facilitator configuration
-
-
-### 1. Clone the Repository
+### Install
 
 ```bash
-git clone https://github.com/yourusername/repopilot-ai.git
+git clone https://github.com/mustapha-bashiru/repopilot-ai.git
 cd repopilot-ai
+npm --prefix backend install
+npm --prefix frontend install
 ```
 
----
-
-### 2. Install Backend Dependencies
+Create local environment files. On macOS/Linux:
 
 ```bash
-cd backend
-npm install
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 ```
 
-Create your environment file:
+On Windows PowerShell:
 
-```bash
-cp .env.example .env
+```powershell
+Copy-Item backend/.env.example backend/.env
+Copy-Item frontend/.env.example frontend/.env
 ```
 
-Configure the required environment variables.
+### Environment
 
----
-
-### 3. Install Frontend Dependencies
-
-```bash
-cd ../frontend
-npm install
-```
-
----
-
-##  Environment Variables
-
-Example configuration:
+Frontend, `frontend/.env`:
 
 ```env
-# Algorand
+REACT_APP_API_URL=http://localhost:3001
+REACT_APP_ALGOD_URL=https://testnet-api.algonode.cloud
+REACT_APP_ALGORAND_NETWORK=testnet
+```
+
+`REACT_APP_API_URL` selects the backend endpoint. `REACT_APP_ALGORAND_NETWORK` accepts `testnet`, `mainnet`, or `preview` and controls the wallet UI's active-network label. The current x402 settlement engine and receipt links intentionally remain fixed to Algorand Testnet, so a working demonstration must use `testnet`.
+
+Backend, `backend/.env`:
+
+```env
 ALGOD_SERVER=https://testnet-api.algonode.cloud
 ALGOD_PORT=443
-MERCHANT_ADDRESS=your_algorand_address
+ALGOD_TOKEN=
+MERCHANT_ADDRESS=your_58_character_algorand_testnet_address
 
-# x402
-X402_FACILITATOR_URL=your_facilitator_url
-X402_API_KEY=your_x402_api_key
+X402_FACILITATOR_URL=https://facilitator.goplausible.xyz
 
-# AI Provider
 AI_PROVIDER=openai
 OPENAI_API_KEY=your_openai_api_key
+GITHUB_TOKEN=your_github_token
 
-# GitHub
-GITHUB_TOKEN=your_github_personal_access_token
-
-# Database
 DATABASE_URL=./data/repopilot.db
-
-# Server
 PORT=3001
 NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
 ```
 
-> ⚠️ Never commit API keys, private keys, wallet secrets, or `.env` files to version control.
+Never commit `.env` files, private keys, wallet recovery phrases, or provider credentials. The merchant address is public; its signing key does not belong in this application.
 
+### Run
 
-##  Running the Application
-
-### Start the Backend
+Start the API:
 
 ```bash
-cd backend
-npm run dev
+npm --prefix backend run dev
 ```
 
-### Start the Frontend
-
-In a separate terminal:
+Start the frontend in a second terminal:
 
 ```bash
-cd frontend
-npm start
+npm --prefix frontend start
 ```
 
-The application will be available at:
+Open `http://localhost:3000`. The API listens on `http://localhost:3001` by default.
 
-```text
-Frontend: http://localhost:3000
-Backend:  http://localhost:3001
-```
-
----
-
-##  API Examples
-
-### Free Repository Overview
-
-A basic repository overview can be requested for testing:
+### Production Build
 
 ```bash
-curl -X POST http://localhost:3001/api/repos/overview \
+npm --prefix frontend run build
+docker compose build
+```
+
+## Verify the x402 Integration
+
+1. Fund a Pera Testnet account with Testnet USDC ASA `10458941` and enough Testnet ALGO for fees.
+2. Configure an opted-in `MERCHANT_ADDRESS` and the GoPlausible facilitator URL.
+3. Start both services, connect Pera Wallet, and submit a paid analysis.
+4. Approve the USDC transfer presented by Pera Wallet.
+5. Open the transaction ID shown in the result receipt or transaction history.
+6. Confirm the asset transfer on [Lora Testnet Explorer](https://lora.algokit.io/testnet) and verify the recipient and USDC amount.
+
+A plain `curl` request to a paid endpoint is still useful for checking the challenge boundary:
+
+```bash
+curl -i -X POST http://localhost:3001/api/pitch-deck \
   -H "Content-Type: application/json" \
   -d '{"repo":"https://github.com/facebook/react"}'
 ```
 
+Without an x402 payment payload, the expected response is HTTP `402` with requirements for the exact scheme, Algorand Testnet, USDC ASA `10458941`, and the configured merchant address.
 
-### Paid Analysis Request
+## Security and Operational Controls
 
-Request a pitch deck analysis:
+- Paid analysis handlers execute only after x402 verification and settlement.
+- The server initializes facilitator capabilities before reporting the API as ready.
+- Confirmed settlements are persisted idempotently in SQLite for receipt history.
+- Provider tokens stay server-side and are loaded from environment variables.
+- Helmet, CORS allowlisting, JSON size limits, and API rate limiting protect the Express surface.
+- The wallet signs only user-approved transactions; RepoPilot never receives wallet private keys.
 
-```bash
-curl -X POST http://localhost:3001/api/pitch-deck \
-  -H "Content-Type: application/json" \
-  -d '{"repo":"https://github.com/facebook/react"}'
-```
+Additional detail is available in [`docs/x402-flow.md`](docs/x402-flow.md) and [`docs/api-reference.md`](docs/api-reference.md).
 
-If payment is required, the API returns an HTTP `402 Payment Required` response containing the required payment information.
+## License
 
-The client then completes the x402 payment flow and retries the request with the appropriate payment authorization.
-
-
-##  Available API Endpoints
-
-| Endpoint                |     Price | Description                                |
-| ----------------------- | --------: | ------------------------------------------ |
-| `/api/pitch-deck`       | 0.02 ALGO | Generate investor pitch intelligence       |
-| `/api/security-audit`   | 0.03 ALGO | Analyze potential security risks           |
-| `/api/architecture`     | 0.02 ALGO | Analyze architecture and generate diagrams |
-| `/api/investor-score`   | 0.01 ALGO | Generate an investment readiness score     |
-| `/api/readme-rewrite`   | 0.01 ALGO | Rewrite repository documentation           |
-| `/api/dependency-audit` | 0.02 ALGO | Analyze dependencies and license risks     |
-| `/api/market-analysis`  | 0.04 ALGO | Analyze market opportunity and competition |
-| `/api/demo-script`      | 0.01 ALGO | Generate a structured product demo script  |
-
-
-##  Security Considerations
-
-RepoPilot AI is designed with the following principles:
-
-* API keys are stored server-side.
-* Private credentials should never be exposed to the frontend.
-* Payment verification occurs before paid analysis is executed.
-* GitHub access is handled through server-side API requests.
-* Payment activity can be tracked through blockchain transactions.
-* Environment variables are used for sensitive configuration.
-
-
-##  Future Roadmap
-
-Potential future improvements include:
-
-* [ ] Support for additional AI providers
-* [ ] Multi-chain payment support
-* [ ] More repository intelligence modules
-* [ ] Automated pull request analysis
-* [ ] Continuous repository monitoring
-* [ ] AI agent-native API access
-* [ ] Team workspaces
-* [ ] Repository comparison
-* [ ] Historical analysis and trend tracking
-* [ ] Public intelligence marketplace
-
-
-##  Screenshots
-
-### Dashboard
-
-(https://Dashboard.png)
-
-### Analysis Modal
-
-(https://Analysis.png)
-
-### Transaction History
-
-(https://transaction-dashboard.png)
-
-
-## Built for Brainwave 2026
-
-RepoPilot AI was built for the **x402 Blockchain Track at Brainwave 2026**.
-
-The project explores how blockchain-native micropayments can transform AI-powered APIs from subscription-based products into modular, pay-per-use intelligence services.
-
-
-##  Team
-
-**Mustech**
-
-Built by **Bashiru Mustapha**
-
-
-##  Acknowledgments
-
-* **GoPlausible** — x402 facilitator infrastructure
-* **Algorand Foundation** — Blockchain infrastructure
-* **OpenAI** — AI model infrastructure
-
-
-##  License
-
-This project is licensed under the MIT License.
-
-
-> **RepoPilot AI — Turn any GitHub repository into actionable intelligence, one paid analysis at a time.**
+MIT

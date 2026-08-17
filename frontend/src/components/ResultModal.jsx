@@ -1,29 +1,77 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
+const formatTime = (time) => {
+    if (!time) return '10 mins';
+    const normalizedTime = String(time).toLowerCase();
+
+    if (normalizedTime.includes('hour') || normalizedTime.includes('hr')) {
+        return '15 mins';
+    }
+
+    if (!Number.isNaN(Number(time))) {
+        return `${time} mins`;
+    }
+
+    return time;
+};
+
+const parseMinutes = (time) => {
+    if (!time) return 10;
+    if (typeof time === 'number') return time;
+
+    const normalizedTime = String(time).toLowerCase();
+    if (normalizedTime.includes('hour') || normalizedTime.includes('hr')) return 15;
+
+    const match = normalizedTime.match(/(\d+)/);
+    return match ? Number.parseInt(match[1], 10) : 10;
+};
 
 function ResultModal({ result, feature, onClose }) {
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') onClose();
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [onClose]);
+
     if (!result) return null;
 
     const data = result.data || result;
+    const receipt = result.receipt;
 
-    // Extract the key pieces
     const success = result.success !== undefined ? result.success : true;
     const message = result.message || 'Analysis completed successfully';
     const score = data.score !== undefined ? data.score : data.overall_score || 85;
     const summary = data.summary || data.problem_statement || 'Analysis complete';
 
-    // Get improvement plan from data
     const improvementPlan = data.improvement_plan || [];
+    const calculatedTotalMinutes = improvementPlan.reduce(
+        (total, item) => total + parseMinutes(item.estimated_time),
+        0
+    );
+
+    const displayTotalTime = improvementPlan.length > 0
+        ? `${calculatedTotalMinutes} mins`
+        : formatTime(data.total_improvement_time);
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content result-modal" onClick={(e) => e.stopPropagation()}>
+            <div
+                className="modal-content result-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="result-modal-title"
+                onClick={(event) => event.stopPropagation()}
+            >
                 {/* Header */}
                 <div className="result-header">
                     <div className="result-title">
                         <span className="result-icon"></span>
-                        <h2>{feature || 'Analysis Result'}</h2>
+                        <h2 id="result-modal-title">{feature || 'Analysis Result'}</h2>
                     </div>
-                    <button className="close-btn" onClick={onClose}>✕</button>
+                    <button className="close-btn" onClick={onClose} aria-label="Close result">✕</button>
                 </div>
 
                 {/* Result Content */}
@@ -91,7 +139,7 @@ function ResultModal({ result, feature, onClose }) {
                                                  item.priority === 'high' ? '🟠' : 
                                                  item.priority === 'medium' ? '🟡' : '🟢'} {item.priority}
                                             </span>
-                                            <span className="improvement-time">⏱️ {item.estimated_time}</span>
+                                            <span className="improvement-time">⏱️ {formatTime(item.estimated_time)}</span>
                                         </div>
                                         <h5>{item.title}</h5>
                                         <p>{item.description}</p>
@@ -102,11 +150,11 @@ function ResultModal({ result, feature, onClose }) {
                                     </div>
                                 ))}
                             </div>
-                            {data.total_improvement_time && (
-                                <div className="improvement-total">
-                                    <strong> Total estimated time:</strong> {data.total_improvement_time}
-                                </div>
-                            )}
+
+                            <div className="improvement-total">
+                                <strong> Total estimated time:</strong> {displayTotalTime}
+                            </div>
+
                             {data.auto_fix_available && (
                                 <button 
                                     className="auto-fix-btn" 
@@ -119,21 +167,32 @@ function ResultModal({ result, feature, onClose }) {
                     )}
 
                     {/* Receipt */}
-                    {result.receipt && (
+                    {receipt && (
                         <div className="receipt-section">
                             <h4> Receipt</h4>
                             <div className="receipt-details">
                                 <div>
                                     <span className="receipt-label">Transaction ID</span>
-                                    <span className="receipt-value">{result.receipt.txid}</span>
+                                    <a
+                                        className="receipt-value text-blue-400 underline hover:text-blue-300"
+                                        href={receipt.loraUrl || `https://lora.algokit.io/testnet/transaction/${receipt.txid}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        {receipt.txid}
+                                    </a>
                                 </div>
                                 <div>
-                                    <span className="receipt-label">Amount</span>
-                                    <span className="receipt-value">{result.receipt.amount} ALGO</span>
+                                    <span className="receipt-label">Network</span>
+                                    <span className="receipt-value">Algorand Testnet</span>
                                 </div>
                                 <div>
-                                    <span className="receipt-label">Timestamp</span>
-                                    <span className="receipt-value">{new Date(result.receipt.timestamp).toLocaleString()}</span>
+                                    <span className="receipt-label">Payment asset</span>
+                                    <span className="receipt-value">Testnet USDC (ASA 10458941)</span>
+                                </div>
+                                <div>
+                                    <span className="receipt-label">Settlement</span>
+                                    <span className="receipt-value">Confirmed by GoPlausible</span>
                                 </div>
                             </div>
                         </div>

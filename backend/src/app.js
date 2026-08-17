@@ -17,6 +17,9 @@ const PORT = process.env.PORT || 3001;
 
 app.use(helmet());
 
+// Tell Express to trust Render's reverse proxy for rate limiting
+app.set('trust proxy', 1);
+
 // Expose x402 response headers so browser clients can parse 402 Payment Required metadata
 const allowedOrigins = [
     'https://repopilot-ai.vercel.app',

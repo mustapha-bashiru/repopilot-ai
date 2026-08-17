@@ -18,8 +18,23 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet());
 
 // Expose x402 response headers so browser clients can parse 402 Payment Required metadata
+const allowedOrigins = [
+    'https://repopilot-ai.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173',
+    ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, true); // Fallback: allow dynamically for dev/preview branches
+        }
+    },
+    credentials: true,
     exposedHeaders: [
         'WWW-Authenticate',
         'Server-Authorization',

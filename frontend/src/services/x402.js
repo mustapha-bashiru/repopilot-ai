@@ -2,10 +2,10 @@ import algosdk from 'algosdk';
 import { PeraWalletConnect } from '@perawallet/connect';
 import { ExactAvmScheme } from '@x402-avm/avm/exact/client';
 import {
-    decodePaymentResponseHeader,
     wrapFetchWithPayment,
     x402Client
 } from '@x402-avm/fetch';
+export { getSettlement, requireSettlement } from './settlement';
 
 // Full CAIP-2, short hash, and wildcard definitions
 export const ALGORAND_TESTNET_NETWORK = 'algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=';
@@ -62,11 +62,6 @@ export const createPaymentFetch = address => {
         .register('algorand:*', scheme);
 
     return wrapFetchWithPayment(window.fetch.bind(window), client);
-};
-
-export const getSettlement = response => {
-    const header = response.headers.get('PAYMENT-RESPONSE') || response.headers.get('payment-response');
-    return header ? decodePaymentResponseHeader(header) : null;
 };
 
 export const getLoraTransactionUrl = txid => `${LORA_TESTNET_URL}/${txid}`;

@@ -86,9 +86,11 @@ app.get('/health', (req, res) => {
 
 await initDatabase();
 
-// Scope x402 payment middleware strictly to API routes
+// x402 must run before the /api mount so req.path retains the /api prefix used
+// by the protected route table. Unmatched API routes pass through unchanged.
 const routes = createRoutes();
-app.use('/api', x402Middleware, routes);
+app.use(x402Middleware);
+app.use('/api', routes);
 
 // Enhanced Error Handler to expose server error details in Vercel logs
 app.use((err, req, res, next) => {

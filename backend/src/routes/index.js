@@ -7,11 +7,20 @@ import { logger } from '../utils/logger.js';
 export const createRoutes = () => {
     const router = express.Router();
 
+    // Helper function to extract repo URL from any common request key
+    const getRepoUrl = (req) => {
+        const url = req.body?.repo || req.body?.repoUrl || req.body?.url || req.query?.repo || req.query?.url;
+        if (!url || typeof url !== 'string') {
+            return null;
+        }
+        return url.trim();
+    };
+
     // Helper function to handle all analysis requests
     const createAnalysisHandler = (featureName, aiMethod) => {
         return async (req, res) => {
             try {
-                const { repo } = req.body;
+                const repo = getRepoUrl(req);
                 if (!repo) {
                     return res.status(400).json({ error: 'Repository URL required' });
                 }
@@ -30,7 +39,10 @@ export const createRoutes = () => {
                 });
             } catch (error) {
                 logger.error(`Error in ${featureName}:`, error.message);
-                res.status(500).json({ error: error.message });
+
+                // Return 400 for client URL/GitHub issues, 500 for backend crashes
+                const status = error.message.includes('Invalid URL') || error.message.includes('404') ? 400 : 500;
+                res.status(status).json({ error: error.message });
             }
         };
     };
@@ -48,7 +60,7 @@ export const createRoutes = () => {
     // Free endpoint - get repo overview (no payment required)
     router.post('/repos/overview', async (req, res) => {
         try {
-            const { repo } = req.body;
+            const repo = getRepoUrl(req);
             if (!repo) {
                 return res.status(400).json({ error: 'Repository URL required' });
             }
@@ -74,7 +86,8 @@ export const createRoutes = () => {
             });
         } catch (error) {
             logger.error('Repo overview error:', error.message);
-            res.status(500).json({ error: error.message });
+            const status = error.message.includes('Invalid URL') || error.message.includes('404') ? 400 : 500;
+            res.status(status).json({ error: error.message });
         }
     });
 
@@ -96,16 +109,16 @@ export const createRoutes = () => {
     });
 
     router.get('/history/:walletAddress', async (req, res) => {
-    try {
-        const history = await ReceiptModel.findAll({
-            where: { sender: req.params.walletAddress },
-            order: [['createdAt', 'DESC']]
-        });
-        res.json({ success: true, history });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch history' });
-    }
-});
+        try {
+            const history = await ReceiptModel.findAll({
+                where: { sender: req.params.walletAddress },
+                order: [['createdAt', 'DESC']]
+            });
+            res.json({ success: true, history });
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to fetch history' });
+        }
+    });
 
     return router;
 };

@@ -7,7 +7,7 @@ import {
     createPaymentFetch,
     disconnectPeraWallet,
     getLoraTransactionUrl,
-    getSettlement,
+    requireSettlement,
     reconnectPeraWallet
 } from './services/x402';
 import './App.css';
@@ -69,12 +69,21 @@ function App() {
             const payer = walletAddress || await connectPeraWallet();
             setWalletAddress(payer);
             const paymentFetch = createPaymentFetch(payer);
-            const response = await paymentFetch(`${API_URL}/api${endpoint}`, {
+
+            // Ensure endpoint starts with a slash
+            const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+            const response = await paymentFetch(`${API_URL}/api${formattedEndpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ repo: repoUrl })
+                // Send all variations for maximum API endpoint compatibility
+                body: JSON.stringify({
+                    repo: repoUrl,
+                    url: repoUrl,
+                    repoUrl: repoUrl
+                })
             });
 
             if (!response.ok) {
@@ -82,22 +91,21 @@ function App() {
                 throw new Error(body.error || body.message || `Request failed with status ${response.status}`);
             }
 
+            const settlement = requireSettlement(response);
             const result = await response.json();
-            const settlement = getSettlement(response);
             
             setAnalyses(prev => ({
                 ...prev,
                 [endpoint]: {
                     ...result,
-                    receipt: settlement?.transaction ? {
+                    receipt: {
                         ...settlement,
                         txid: settlement.transaction,
                         loraUrl: getLoraTransactionUrl(settlement.transaction)
-                    } : null
+                    }
                 }
             }));
 
-            // Auto-refresh transaction history after successful payment
             setHistoryRefreshKey(prev => prev + 1);
 
         } catch (error) {
